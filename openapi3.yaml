@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.24 21:25
+  version: 2026.05.25 16:30
 servers:
 - url: http://localhost:8080
 tags: []
@@ -201,7 +201,7 @@ paths:
       summary: 회원 가입
       description: "## 회원 가입 기능 \n### 사용법 \n- 필드의 validation을 확인해주세요.\n- 아이디와 이메일\
         \ 중복 체크 완료 후 진행해주세요."
-      operationId: 회원가입_
+      operationId: 강사_회원가입_2xx회원가입_2xx회원가입_4xx_아이디_중복회원가입_4xx_요청_데이터_유효성_검사_실패회원가입_4xx_이메일_중복
       requestBody:
         content:
           application/json;charset=UTF-8:
@@ -210,16 +210,19 @@ paths:
             examples:
               회원가입_4xx_이메일_중복:
                 value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
-                  :\"duplicate@test.com\",\"name\":\"홍길동\"}"
+                  :\"duplicate@test.com\",\"name\":\"홍길동\",\"creator\":false}"
               회원가입_4xx_요청_데이터_유효성_검사_실패:
                 value: "{\"loginId\":\"test1\",\"password\":\"1234\",\"email\":\"\
-                  test1@test.com\",\"name\":\"홍길동\"}"
+                  test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
               회원가입_2xx:
                 value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
-                  :\"test1@test.com\",\"name\":\"홍길동\"}"
+                  :\"test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
               회원가입_4xx_아이디_중복:
                 value: "{\"loginId\":\"duplicateId\",\"password\":\"test1@1234\",\"\
-                  email\":\"test1@test.com\",\"name\":\"홍길동\"}"
+                  email\":\"test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
+              강사_회원가입_2xx:
+                value: "{\"loginId\":\"test2\",\"password\":\"test2@1234\",\"email\"\
+                  :\"test2@test.com\",\"name\":\"존도\",\"creator\":true}"
       responses:
         "409":
           description: "409"
@@ -266,6 +269,12 @@ paths:
                       "message" : "OK",
                       "data" : 0
                     }
+                강사_회원가입_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : 0
+                    }
   /users/profile:
     get:
       tags:
@@ -288,7 +297,8 @@ paths:
                       "data" : {
                         "loginId" : "test1",
                         "email" : "test1@test.com",
-                        "name" : "홍길동"
+                        "name" : "홍길동",
+                        "role" : "USER"
                       }
                     }
   /users/{userId}:
@@ -319,7 +329,8 @@ paths:
                       "message" : "OK",
                       "data" : {
                         "email" : "test1@test.com",
-                        "name" : "홍길동"
+                        "name" : "홍길동",
+                        "role" : "USER"
                       }
                     }
         "404":
@@ -421,8 +432,8 @@ paths:
                     }
 components:
   schemas:
-    PublicUserProfileResponse:
-      title: PublicUserProfileResponse
+    UserProfileResponse:
+      title: UserProfileResponse
       required:
       - message
       type: object
@@ -430,9 +441,17 @@ components:
         data:
           required:
           - email
+          - loginId
           - name
+          - role
           type: object
           properties:
+            role:
+              type: string
+              description: "사용자 역할입니다.(강사: CREATOR, 수강생: USER)"
+            loginId:
+              type: string
+              description: 사용자 아이디입니다.
             name:
               type: string
               description: 사용자 이름입니다.
@@ -442,15 +461,22 @@ components:
         message:
           type: string
           description: 성공 응답 메세지입니다.
+    ApiResponse:
+      title: ApiResponse
+      type: object
     RegisterUserRequest:
       title: RegisterUserRequest
       required:
+      - creator
       - email
       - loginId
       - name
       - password
       type: object
       properties:
+        creator:
+          type: boolean
+          description: "강사 회원가입 여부입니다. (true: 강사)"
         password:
           type: string
           description: 비밀번호는 특수문자를 포함한 영문과 숫자 8자리 이상입니다.
@@ -463,9 +489,6 @@ components:
         email:
           type: string
           description: 이메일 형식을 지켜주세요.
-    ApiResponse:
-      title: ApiResponse
-      type: object
     AuthenticateUserRequest:
       title: AuthenticateUserRequest
       required:
@@ -479,8 +502,8 @@ components:
         loginId:
           type: string
           description: 아이디는 영문 4자리 이상입니다.
-    UserProfileResponse:
-      title: UserProfileResponse
+    PublicUserProfileResponse:
+      title: PublicUserProfileResponse
       required:
       - message
       type: object
@@ -488,13 +511,13 @@ components:
         data:
           required:
           - email
-          - loginId
           - name
+          - role
           type: object
           properties:
-            loginId:
+            role:
               type: string
-              description: 사용자 아이디입니다.
+              description: "사용자 역할입니다.(강사: CREATOR, 수강생: USER)"
             name:
               type: string
               description: 사용자 이름입니다.
