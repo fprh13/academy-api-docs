@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.25 20:24
+  version: 2026.05.25 21:37
 servers:
 - url: http://localhost:8080
 tags: []
@@ -68,6 +68,71 @@ paths:
                     {
                       "message" : "OK",
                       "data" : "Bearer accessabcdefghijklmnopqrstuvwxyz"
+                    }
+  /courses:
+    post:
+      tags:
+      - Course
+      summary: 강의 등록
+      description: "## 강의 등록 기능 \n### 사용법 \n- 강사 사용자만 사용가능합니다.\n"
+      operationId: 강의_생성_
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/RegisterCourseRequest"
+            examples:
+              강의_생성_2xx:
+                value: "{\"title\":\"자바 입문\",\"description\":\"자바 기초 문법을 학습하는 강의입니\
+                  다.\",\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
+                  ,\"endDate\":\"2026-06-30\"}"
+              강의_생성_4xx_요청_데이터_유효성_검사_실패:
+                value: "{\"title\":\"\",\"description\":\"자바 기초 문법을 학습하는 강의입니다.\"\
+                  ,\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
+                  ,\"endDate\":\"2026-06-30\"}"
+              강의_생성_4xx_강사가_아닌_경우:
+                value: "{\"title\":\"자바 입문\",\"description\":\"자바 기초 문법을 학습하는 강의입니\
+                  다.\",\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
+                  ,\"endDate\":\"2026-06-30\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                강의_생성_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : 1
+                    }
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                강의_생성_4xx_요청_데이터_유효성_검사_실패:
+                  value: |-
+                    {
+                      "message" : "title의 필드 값 유효하지 않습니다.",
+                      "data" : null
+                    }
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                강의_생성_4xx_강사가_아닌_경우:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
+                      "data" : null
                     }
   /health:
     get:
@@ -432,6 +497,35 @@ paths:
                     }
 components:
   schemas:
+    RegisterCourseRequest:
+      title: RegisterCourseRequest
+      required:
+      - description
+      - endDate
+      - maxCapacity
+      - price
+      - startDate
+      - title
+      type: object
+      properties:
+        endDate:
+          type: string
+          description: 수강 종료일입니다.
+        price:
+          type: number
+          description: 강의 가격입니다. 0 이상이어야 합니다.
+        maxCapacity:
+          type: number
+          description: 최대 수강 정원입니다. 1 이상이어야 합니다.
+        description:
+          type: string
+          description: 강의 설명입니다.
+        title:
+          type: string
+          description: 강의 제목입니다.
+        startDate:
+          type: string
+          description: 수강 시작일입니다.
     UserProfileResponse:
       title: UserProfileResponse
       required:
