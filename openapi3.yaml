@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.26 18:22
+  version: 2026.05.26 22:17
 servers:
 - url: http://localhost:8080
 tags: []
@@ -336,6 +336,390 @@ paths:
                       "data" : null
                     }
   /enrollments:
+    get:
+      tags:
+      - Enrollment
+      summary: 수강 신청 목록 조회
+      description: "## 수강 신청 목록 조회 기능 \n### 사용법 \n- 상태 조건과 페이지 조건으로 본인의 수강 신청 목록을\
+        \ 조회합니다.\n- state를 생략하면 결제 대기와 결제 확정 목록을 함께 조회합니다.\n- state가 confirmed면 결제\
+        \ 확정 목록만 조회합니다.\n- state가 confirmed면 결제 취소 목록만 조회합니다.\n"
+      operationId: 수강_신청_목록_조회_2xx
+      parameters:
+      - name: state
+        in: query
+        description: "수강 신청 상태 필터입니다. 생략하면 수강 대기와 확정만, confirmed면 확정 목록만, cancel이면\
+          \ 취소 목록만 조회합니다."
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 조회할 페이지 번호입니다. 1부터 시작합니다.
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기입니다. 기본값은 10입니다.
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                수강_신청_목록_조회_2xx_취소건_조회:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : {
+                        "content" : [ {
+                          "enrollmentId" : 1,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 2,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 3,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 4,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 5,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 6,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 7,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 8,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 9,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        }, {
+                          "enrollmentId" : 10,
+                          "state" : "CANCELED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 12,
+                            "courseName" : "이취소",
+                            "coursePrice" : 990000
+                          }
+                        } ],
+                        "page" : {
+                          "number" : 1,
+                          "size" : 10,
+                          "totalElements" : 15,
+                          "totalPages" : 2,
+                          "hasNext" : true,
+                          "hasPrevious" : false
+                        }
+                      }
+                    }
+                수강_신청_목록_조회_2xx_확정건_조회:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : {
+                        "content" : [ {
+                          "enrollmentId" : 1,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 2,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 3,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 4,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 5,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 6,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 7,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 8,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 9,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 10,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        } ],
+                        "page" : {
+                          "number" : 1,
+                          "size" : 10,
+                          "totalElements" : 15,
+                          "totalPages" : 2,
+                          "hasNext" : true,
+                          "hasPrevious" : false
+                        }
+                      }
+                    }
+                수강_신청_목록_조회_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : {
+                        "content" : [ {
+                          "enrollmentId" : 1,
+                          "state" : "PADDING",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 13,
+                            "courseName" : "박대기",
+                            "coursePrice" : 190000
+                          }
+                        }, {
+                          "enrollmentId" : 2,
+                          "state" : "PADDING",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 13,
+                            "courseName" : "박대기",
+                            "coursePrice" : 190000
+                          }
+                        }, {
+                          "enrollmentId" : 3,
+                          "state" : "PADDING",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 13,
+                            "courseName" : "박대기",
+                            "coursePrice" : 190000
+                          }
+                        }, {
+                          "enrollmentId" : 4,
+                          "state" : "PADDING",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 13,
+                            "courseName" : "박대기",
+                            "coursePrice" : 190000
+                          }
+                        }, {
+                          "enrollmentId" : 5,
+                          "state" : "PADDING",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 13,
+                            "courseName" : "박대기",
+                            "coursePrice" : 190000
+                          }
+                        }, {
+                          "enrollmentId" : 6,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 7,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 8,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 9,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 10,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        } ],
+                        "page" : {
+                          "number" : 1,
+                          "size" : 10,
+                          "totalElements" : 15,
+                          "totalPages" : 2,
+                          "hasNext" : true,
+                          "hasPrevious" : false
+                        }
+                      }
+                    }
     post:
       tags:
       - Enrollment
