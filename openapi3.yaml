@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.26 15:09
+  version: 2026.05.26 15:48
 servers:
 - url: http://localhost:8080
 tags: []
@@ -333,6 +333,81 @@ paths:
                   value: |-
                     {
                       "message" : "Course을(를) 찾을 수 없습니다.",
+                      "data" : null
+                    }
+  /enrollments:
+    post:
+      tags:
+      - Enrollment
+      summary: 수강 신청
+      description: "## 수강 신청 기능 \n### 사용법 \n- 인증된 수강생이 모집 중인 강의에 신청합니다.\n- 정원이 가득\
+        \ 찬 강의는 신청할 수 없습니다.\n"
+      operationId: 수강_신청_
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/ApplyEnrollmentRequest"
+            examples:
+              수강_신청_4xx_강의_없음:
+                value: "{\"courseId\":999}"
+              수강_신청_2xx:
+                value: "{\"courseId\":1}"
+              수강_신청_4xx_요청_데이터_유효성_검사_실패:
+                value: "{\"courseId\":null}"
+              수강_신청_4xx_정원_초과:
+                value: "{\"courseId\":1}"
+      responses:
+        "404":
+          description: "404"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_신청_4xx_강의_없음:
+                  value: |-
+                    {
+                      "message" : "Course을(를) 찾을 수 없습니다.",
+                      "data" : null
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                수강_신청_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : 1
+                    }
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_신청_4xx_요청_데이터_유효성_검사_실패:
+                  value: |-
+                    {
+                      "message" : "courseId의 필드 값 유효하지 않습니다.",
+                      "data" : null
+                    }
+        "409":
+          description: "409"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_신청_4xx_정원_초과:
+                  value: |-
+                    {
+                      "message" : "정원이 가득 찼습니다.",
                       "data" : null
                     }
   /health:
@@ -727,35 +802,6 @@ components:
         startDate:
           type: string
           description: 수강 시작일입니다.
-    UserProfileResponse:
-      title: UserProfileResponse
-      required:
-      - message
-      type: object
-      properties:
-        data:
-          required:
-          - email
-          - loginId
-          - name
-          - role
-          type: object
-          properties:
-            role:
-              type: string
-              description: "사용자 역할입니다.(강사: CREATOR, 수강생: USER)"
-            loginId:
-              type: string
-              description: 사용자 아이디입니다.
-            name:
-              type: string
-              description: 사용자 이름입니다.
-            email:
-              type: string
-              description: 사용자 이메일입니다.
-        message:
-          type: string
-          description: 성공 응답 메세지입니다.
     ApiResponse:
       title: ApiResponse
       type: object
@@ -874,6 +920,44 @@ components:
             role:
               type: string
               description: "사용자 역할입니다.(강사: CREATOR, 수강생: USER)"
+            name:
+              type: string
+              description: 사용자 이름입니다.
+            email:
+              type: string
+              description: 사용자 이메일입니다.
+        message:
+          type: string
+          description: 성공 응답 메세지입니다.
+    ApplyEnrollmentRequest:
+      title: ApplyEnrollmentRequest
+      required:
+      - courseId
+      type: object
+      properties:
+        courseId:
+          type: number
+          description: 수강 신청할 강의 식별자입니다.
+    UserProfileResponse:
+      title: UserProfileResponse
+      required:
+      - message
+      type: object
+      properties:
+        data:
+          required:
+          - email
+          - loginId
+          - name
+          - role
+          type: object
+          properties:
+            role:
+              type: string
+              description: "사용자 역할입니다.(강사: CREATOR, 수강생: USER)"
+            loginId:
+              type: string
+              description: 사용자 아이디입니다.
             name:
               type: string
               description: 사용자 이름입니다.
