@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.26 17:01
+  version: 2026.05.26 18:22
 servers:
 - url: http://localhost:8080
 tags: []
@@ -410,6 +410,61 @@ paths:
                       "message" : "정원이 가득 찼습니다.",
                       "data" : null
                     }
+  /enrollments/{enrollmentId}/cancel:
+    post:
+      tags:
+      - Enrollment
+      summary: 수강 신청 취소
+      description: "## 수강 신청 취소 기능 \n### 사용법 \n- 본인의 수강 신청을 취소합니다.\n- 결제 대기 상태 신청만\
+        \ 취소할 수 있습니다.\n"
+      operationId: 수강_신청_취소_
+      parameters:
+      - name: enrollmentId
+        in: path
+        description: 취소할 수강 신청의 PK입니다.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                수강_신청_취소_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : null
+                    }
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_신청_취소_4xx_본인_신청_아님:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
+                      "data" : null
+                    }
+        "404":
+          description: "404"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_신청_취소_4xx_수강신청_없음:
+                  value: |-
+                    {
+                      "message" : "Enrollment을(를) 찾을 수 없습니다.",
+                      "data" : null
+                    }
   /enrollments/{enrollmentId}/confirm:
     post:
       tags:
@@ -476,6 +531,87 @@ paths:
                   value: |-
                     {
                       "message" : "OK",
+                      "data" : null
+                    }
+  /enrollments/{enrollmentId}/refund:
+    post:
+      tags:
+      - Enrollment
+      summary: 수강 확정 취소
+      description: "## 수강 확정 취소 기능 \n### 사용법 \n- 본인의 결제 확정 상태 수강 신청을 취소합니다.\n- 결제\
+        \ 후 7일 이내에만 취소할 수 있습니다.\n"
+      operationId: 수강_확정_취소_
+      parameters:
+      - name: enrollmentId
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: "404"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_확정_취소_4xx_수강신청_없음:
+                  value: |-
+                    {
+                      "message" : "Enrollment을(를) 찾을 수 없습니다.",
+                      "data" : null
+                    }
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_확정_취소_4xx_취소_가능_기간_초과:
+                  value: |-
+                    {
+                      "message" : "결제 후 7일이 지나 취소할 수 없습니다.",
+                      "data" : null
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                수강_확정_취소_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : null
+                    }
+        "409":
+          description: "409"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_확정_취소_4xx_결제_확정_상태_아님:
+                  value: |-
+                    {
+                      "message" : "결제 확정 상태의 수강 신청만 취소할 수 있습니다.",
+                      "data" : null
+                    }
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_확정_취소_4xx_본인_신청_아님:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
                       "data" : null
                     }
   /health:
