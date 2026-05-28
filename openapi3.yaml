@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: "[라이브 클래스] 수강 신청 시스템"
   description: 수강 신청 시스템의 API 문서입니다.
-  version: 2026.05.28 17:35
+  version: 2026.05.28 17:43
 servers:
 - url: http://localhost:8080
 tags: []
@@ -22,14 +22,14 @@ paths:
             schema:
               $ref: "#/components/schemas/AuthenticateUserRequest"
             examples:
-              로그인_4xx_비밀번호가_올바르지_않음:
-                value: "{\"loginId\":\"test1\",\"password\":\"wrong1234@\"}"
               로그인_4xx_요청_데이터_유효성_검사_실패:
                 value: "{\"loginId\":\"test1\",\"password\":\"1234\"}"
-              로그인_4xx_아이디_존재하지_않음:
-                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\"}"
               로그인_2xx:
                 value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\"}"
+              로그인_4xx_아이디_존재하지_않음:
+                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\"}"
+              로그인_4xx_비밀번호가_올바르지_않음:
+                value: "{\"loginId\":\"test1\",\"password\":\"wrong1234@\"}"
       responses:
         "400":
           description: "400"
@@ -38,12 +38,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
               examples:
-                로그인_4xx_비밀번호가_올바르지_않음:
-                  value: |-
-                    {
-                      "message" : "아이디 혹은 비밀번호가 일치하지 않습니다.",
-                      "data" : null
-                    }
                 로그인_4xx_요청_데이터_유효성_검사_실패:
                   value: |-
                     {
@@ -51,6 +45,12 @@ paths:
                       "data" : null
                     }
                 로그인_4xx_아이디_존재하지_않음:
+                  value: |-
+                    {
+                      "message" : "아이디 혹은 비밀번호가 일치하지 않습니다.",
+                      "data" : null
+                    }
+                로그인_4xx_비밀번호가_올바르지_않음:
                   value: |-
                     {
                       "message" : "아이디 혹은 비밀번호가 일치하지 않습니다.",
@@ -238,6 +238,10 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterCourseRequest"
             examples:
+              강의_생성_4xx_강사가_아닌_경우:
+                value: "{\"title\":\"자바 입문\",\"description\":\"자바 기초 문법을 학습하는 강의입니\
+                  다.\",\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
+                  ,\"endDate\":\"2026-06-30\"}"
               강의_생성_2xx:
                 value: "{\"title\":\"자바 입문\",\"description\":\"자바 기초 문법을 학습하는 강의입니\
                   다.\",\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
@@ -246,11 +250,20 @@ paths:
                 value: "{\"title\":\"\",\"description\":\"자바 기초 문법을 학습하는 강의입니다.\"\
                   ,\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
                   ,\"endDate\":\"2026-06-30\"}"
-              강의_생성_4xx_강사가_아닌_경우:
-                value: "{\"title\":\"자바 입문\",\"description\":\"자바 기초 문법을 학습하는 강의입니\
-                  다.\",\"price\":100000,\"maxCapacity\":30,\"startDate\":\"2026-06-01\"\
-                  ,\"endDate\":\"2026-06-30\"}"
       responses:
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                강의_생성_4xx_강사가_아닌_경우:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
+                      "data" : null
+                    }
         "200":
           description: "200"
           content:
@@ -275,19 +288,6 @@ paths:
                   value: |-
                     {
                       "message" : "title의 필드 값 유효하지 않습니다.",
-                      "data" : null
-                    }
-        "403":
-          description: "403"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-              examples:
-                강의_생성_4xx_강사가_아닌_경우:
-                  value: |-
-                    {
-                      "message" : "접근 권한이 없습니다.",
                       "data" : null
                     }
   /courses/{courseId}:
@@ -375,19 +375,6 @@ paths:
         schema:
           type: string
       responses:
-        "403":
-          description: "403"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-              examples:
-                강의_수강생_목록_조회_4xx_본인_강의가_아님:
-                  value: |-
-                    {
-                      "message" : "접근 권한이 없습니다.",
-                      "data" : null
-                    }
         "404":
           description: "404"
           content:
@@ -432,6 +419,19 @@ paths:
                         }
                       }
                     }
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                강의_수강생_목록_조회_4xx_본인_강의가_아님:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
+                      "data" : null
+                    }
   /enrollments:
     get:
       tags:
@@ -470,6 +470,122 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
               examples:
+                수강_신청_목록_조회_2xx_확정건_조회:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : {
+                        "content" : [ {
+                          "enrollmentId" : 1,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 2,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 3,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 4,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 5,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 6,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 7,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 8,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 9,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        }, {
+                          "enrollmentId" : 10,
+                          "state" : "CONFIRMED",
+                          "createAt" : "2026-06-02T10:00:00",
+                          "paidAt" : "2026-06-02T10:05:00",
+                          "courseInfo" : {
+                            "courseId" : 11,
+                            "courseName" : "김확정",
+                            "coursePrice" : 110000
+                          }
+                        } ],
+                        "page" : {
+                          "number" : 1,
+                          "size" : 10,
+                          "totalElements" : 15,
+                          "totalPages" : 2,
+                          "hasNext" : true,
+                          "hasPrevious" : false
+                        }
+                      }
+                    }
                 수강_신청_목록_조회_2xx_웨이팅건_조회:
                   value: |-
                     {
@@ -702,122 +818,6 @@ paths:
                         }
                       }
                     }
-                수강_신청_목록_조회_2xx_확정건_조회:
-                  value: |-
-                    {
-                      "message" : "OK",
-                      "data" : {
-                        "content" : [ {
-                          "enrollmentId" : 1,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 2,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 3,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 4,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 5,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 6,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 7,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 8,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 9,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        }, {
-                          "enrollmentId" : 10,
-                          "state" : "CONFIRMED",
-                          "createAt" : "2026-06-02T10:00:00",
-                          "paidAt" : "2026-06-02T10:05:00",
-                          "courseInfo" : {
-                            "courseId" : 11,
-                            "courseName" : "김확정",
-                            "coursePrice" : 110000
-                          }
-                        } ],
-                        "page" : {
-                          "number" : 1,
-                          "size" : 10,
-                          "totalElements" : 15,
-                          "totalPages" : 2,
-                          "hasNext" : true,
-                          "hasPrevious" : false
-                        }
-                      }
-                    }
                 수강_신청_목록_조회_2xx:
                   value: |-
                     {
@@ -949,10 +949,10 @@ paths:
             examples:
               수강_신청_4xx_강의_없음:
                 value: "{\"courseId\":999}"
-              수강_신청_2xx:
-                value: "{\"courseId\":1}"
               수강_신청_4xx_요청_데이터_유효성_검사_실패:
                 value: "{\"courseId\":null}"
+              수강_신청_2xx:
+                value: "{\"courseId\":1}"
               수강_신청_4xx_이미_신청한_강의:
                 value: "{\"courseId\":1}"
       responses:
@@ -969,19 +969,6 @@ paths:
                       "message" : "Course을(를) 찾을 수 없습니다.",
                       "data" : null
                     }
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-              examples:
-                수강_신청_2xx:
-                  value: |-
-                    {
-                      "message" : "OK",
-                      "data" : 1
-                    }
         "400":
           description: "400"
           content:
@@ -994,6 +981,19 @@ paths:
                     {
                       "message" : "courseId의 필드 값 유효하지 않습니다.",
                       "data" : null
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                수강_신청_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
+                      "data" : 1
                     }
         "409":
           description: "409"
@@ -1160,6 +1160,19 @@ paths:
                       "message" : "Enrollment을(를) 찾을 수 없습니다.",
                       "data" : null
                     }
+        "403":
+          description: "403"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                수강_확정_취소_4xx_본인_신청_아님:
+                  value: |-
+                    {
+                      "message" : "접근 권한이 없습니다.",
+                      "data" : null
+                    }
         "400":
           description: "400"
           content:
@@ -1199,19 +1212,6 @@ paths:
                       "message" : "결제 확정 상태의 수강 신청만 취소할 수 있습니다.",
                       "data" : null
                     }
-        "403":
-          description: "403"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-              examples:
-                수강_확정_취소_4xx_본인_신청_아님:
-                  value: |-
-                    {
-                      "message" : "접근 권한이 없습니다.",
-                      "data" : null
-                    }
   /enrollments/{enrollmentId}/wait-cancel:
     delete:
       tags:
@@ -1223,24 +1223,11 @@ paths:
       parameters:
       - name: enrollmentId
         in: path
-        description: ""
+        description: 웨이팅 취소할 수강 신청의 PK입니다.
         required: true
         schema:
           type: string
       responses:
-        "403":
-          description: "403"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-              examples:
-                웨이팅_취소_4xx_본인_신청_아님:
-                  value: |-
-                    {
-                      "message" : "접근 권한이 없습니다.",
-                      "data" : null
-                    }
         "200":
           description: "200"
           content:
@@ -1252,6 +1239,19 @@ paths:
                   value: |-
                     {
                       "message" : "OK",
+                      "data" : null
+                    }
+        "409":
+          description: "409"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                웨이팅_취소_4xx_웨이팅_상태_아님:
+                  value: |-
+                    {
+                      "message" : "웨이팅 상태의 수강 신청만 취소할 수 있습니다.",
                       "data" : null
                     }
         "404":
@@ -1267,17 +1267,17 @@ paths:
                       "message" : "Enrollment을(를) 찾을 수 없습니다.",
                       "data" : null
                     }
-        "409":
-          description: "409"
+        "403":
+          description: "403"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
               examples:
-                웨이팅_취소_4xx_웨이팅_상태_아님:
+                웨이팅_취소_4xx_본인_신청_아님:
                   value: |-
                     {
-                      "message" : "웨이팅 상태의 수강 신청만 취소할 수 있습니다.",
+                      "message" : "접근 권한이 없습니다.",
                       "data" : null
                     }
   /health:
@@ -1442,21 +1442,21 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterUserRequest"
             examples:
-              회원가입_4xx_이메일_중복:
-                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
-                  :\"duplicate@test.com\",\"name\":\"홍길동\",\"creator\":false}"
-              회원가입_4xx_요청_데이터_유효성_검사_실패:
-                value: "{\"loginId\":\"test1\",\"password\":\"1234\",\"email\":\"\
-                  test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
-              회원가입_2xx:
-                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
-                  :\"test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
               회원가입_4xx_아이디_중복:
                 value: "{\"loginId\":\"duplicateId\",\"password\":\"test1@1234\",\"\
                   email\":\"test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
+              회원가입_2xx:
+                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
+                  :\"test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
               강사_회원가입_2xx:
                 value: "{\"loginId\":\"test2\",\"password\":\"test2@1234\",\"email\"\
                   :\"test2@test.com\",\"name\":\"존도\",\"creator\":true}"
+              회원가입_4xx_요청_데이터_유효성_검사_실패:
+                value: "{\"loginId\":\"test1\",\"password\":\"1234\",\"email\":\"\
+                  test1@test.com\",\"name\":\"홍길동\",\"creator\":false}"
+              회원가입_4xx_이메일_중복:
+                value: "{\"loginId\":\"test1\",\"password\":\"test1@1234\",\"email\"\
+                  :\"duplicate@test.com\",\"name\":\"홍길동\",\"creator\":false}"
       responses:
         "409":
           description: "409"
@@ -1465,29 +1465,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
               examples:
-                회원가입_4xx_이메일_중복:
-                  value: |-
-                    {
-                      "message" : "이미 사용 중인 이메일입니다.",
-                      "data" : null
-                    }
                 회원가입_4xx_아이디_중복:
                   value: |-
                     {
                       "message" : "이미 사용 중인 아이디입니다.",
                       "data" : null
                     }
-        "400":
-          description: "400"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-              examples:
-                회원가입_4xx_요청_데이터_유효성_검사_실패:
+                회원가입_4xx_이메일_중복:
                   value: |-
                     {
-                      "message" : "password의 필드 값 유효하지 않습니다.",
+                      "message" : "이미 사용 중인 이메일입니다.",
                       "data" : null
                     }
         "200":
@@ -1508,6 +1495,19 @@ paths:
                     {
                       "message" : "OK",
                       "data" : 0
+                    }
+        "400":
+          description: "400"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+              examples:
+                회원가입_4xx_요청_데이터_유효성_검사_실패:
+                  value: |-
+                    {
+                      "message" : "password의 필드 값 유효하지 않습니다.",
+                      "data" : null
                     }
   /users/profile:
     get:
@@ -1596,19 +1596,6 @@ paths:
         schema:
           type: string
       responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-              examples:
-                이메일_중복_체크_2xx:
-                  value: |-
-                    {
-                      "message" : "OK",
-                      "data" : null
-                    }
         "409":
           description: "409"
           content:
@@ -1620,6 +1607,19 @@ paths:
                   value: |-
                     {
                       "message" : "이미 사용 중인 이메일입니다.",
+                      "data" : null
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                이메일_중복_체크_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
                       "data" : null
                     }
   /users/login-id/exists:
@@ -1638,19 +1638,6 @@ paths:
         schema:
           type: string
       responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-              examples:
-                아이디_중복_체크_2xx:
-                  value: |-
-                    {
-                      "message" : "OK",
-                      "data" : null
-                    }
         "409":
           description: "409"
           content:
@@ -1662,6 +1649,19 @@ paths:
                   value: |-
                     {
                       "message" : "이미 사용 중인 아이디입니다.",
+                      "data" : null
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+              examples:
+                아이디_중복_체크_2xx:
+                  value: |-
+                    {
+                      "message" : "OK",
                       "data" : null
                     }
 components:
